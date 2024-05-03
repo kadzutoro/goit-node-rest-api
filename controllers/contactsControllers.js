@@ -35,25 +35,27 @@ export const deleteContact = async (req, res, next) => {
     }
     res.json(contact);
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
 export const createContact = async (req, res) => {
-    const contact = req.body;
-    const newContact = await addContact(contact);
-    res.stats(201).json(newContact);
+  const contact = req.body;
+  const newContact = await addContact(contact);
+  res.stats(201).json(newContact);
 };
 
 export const updateContact = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const updatedContact = await modifyContact(id, req.body);
-        if (!updateContact) {
-            throw HttpError(404);
-            res.json(updateContact);
-        }
-    } catch (error) {
-        next(error)
+  try {
+    const { id } = req.params;
+    const updatedContact = await modifyContact(id, req.body);
+
+    if (!updatedContact) {
+      throw HttpError(404);
     }
+
+    res.json(updatedContact);
+  } catch (error) {
+    next(error);
+  }
 };
