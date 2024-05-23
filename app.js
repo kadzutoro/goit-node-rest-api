@@ -4,6 +4,8 @@ import cors from "cors";
 import 'dotenv/config'
 import mongoose from "mongoose";
 import contactsRouter from "./routes/contactsRouter.js";
+import authRouter from './routes/authRouter.js'
+import checkToken from "./middlewares/checkToken.js";
 
 const DB_URI = process.env.DB_URI;
 const app = express();
@@ -21,7 +23,8 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/contacts", contactsRouter);
+app.use("/api/contacts", contactsRouter, checkToken);
+app.use('/appi/users', authRouter)
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
