@@ -1,7 +1,8 @@
 import User from "../models/user.js";
-import HttpError from "../helpers/HttpError.js";
+import HttpError from "../helpers/httpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 const register = async (req, res, next) => {
   try {
@@ -42,8 +43,8 @@ const login = async (req, res, next) => {
     if (!isMatch) {
       throw HttpError(401, "Email or password is wrong");
     }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+    const secretKey = process.env.JWT_SECRET_KEY;
+    const token = jwt.sign({ id: user._id }, secretKey, {
       expiresIn: 60 * 60,
     });
 
@@ -80,32 +81,26 @@ const getCurrentUser = async (req, res, next) => {
       subscription: user.subscription,
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
 const changeSubscription = async (req, res, next) => {
-    try {
-      const id = req.user.id;
-      const { subscription } = req.body;
-      const user = await User.findByIdAndUpdate(
-        id,
-        { subscription },
-        { new: true }
-      );
-      res.json({
-        email: user.email,
-        subscription: user.subscription,
-      });
-    } catch (error) {
-        next(error)
-    }
-}
-
-export { 
-    register,
-    login, 
-    logout, 
-    getCurrentUser, 
-    changeSubscription 
+  try {
+    const id = req.user.id;
+    const { subscription } = req.body;
+    const user = await User.findByIdAndUpdate(
+      id,
+      { subscription },
+      { new: true }
+    );
+    res.json({
+      email: user.email,
+      subscription: user.subscription,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
+export { register, login, logout, getCurrentUser, changeSubscription };

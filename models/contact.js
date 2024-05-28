@@ -3,14 +3,14 @@ import mongoose from "mongoose";
 const contactSchema = new mongoose.Schema (
     {
         name:{
-            type: string,
+            type: String,
             required: [true, 'Set name for contact']
         },
         email: {
-            type: string,
+            type: String,
         },
         phone: {
-            type: string,
+            type: String,
         },
         favorite: {
             type: Boolean,

@@ -1,27 +1,29 @@
-import { required } from "joi";
+
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     password: {
-        type: string,
-        required: [true, 'Password is required']
+      type: String,
+      required: [true, "Password is required"],
     },
     email: {
-        type: string,
-        required: [true, 'Email is required'],
-        unique: true,
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
     },
     subscription: {
-        type: string,
-        enum: ['starter', 'pro', 'business'],
-        default: 'starter'
+      type: String,
+      enum: ["starter", "pro", "business"],
+      default: "starter",
     },
     token: {
-        type: String,
-        default: null,
-    }
-}, { timestamps: true, versionKey: false }
-)
+      type: String,
+      default: null,
+    },
+  },
+  { timestamps: true, versionKey: false }
+);
 
 const User = mongoose.model("User", userSchema);
 
