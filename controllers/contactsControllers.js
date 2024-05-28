@@ -2,20 +2,20 @@ import Contact from "../models/contact.js";
 import HttpError from "../helpers/httpError.js";
 
 
-export const getAllContacts = async (_, res, next) => {
+export const getAllContacts = async (req, res, next) => {
   try {
-    const { favorite, page = 1, limit = 20 } = req.query
-    const contacts = await Contact.find(query).skip(startIndex).limit(limit)
-    const total = await Contact.countDocuments(query);
-    let query = { owner };
-    if(!typeof favorite !== "undefined") {
-      query.favorite = favorite
-    }
-    const startIndex = ( page - 1 ) * limit;
+    const { favorite } = req.query;
+    const owner = req.user.id;
 
-    res.json(contacts)
+    let query = { owner };
+    if (typeof favorite !== "undefined") {
+      query.favorite = favorite;
+    }
+
+    const contacts = await Contact.find(query);
+    res.json(contacts);
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
