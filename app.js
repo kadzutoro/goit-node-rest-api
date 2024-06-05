@@ -30,6 +30,7 @@ app.use("/api/contacts",checkToken, contactsRouter );
 app.use("/api/users", authRouter)
 app.use("/avatars", express.static(path.resolve("public/avatars")));
 app.use("/users", checkToken, usersRouter)
+app.use(express.static(path.resolve("public")));
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
