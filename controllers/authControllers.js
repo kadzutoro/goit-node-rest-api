@@ -2,31 +2,46 @@ import User from "../models/user.js";
 import HttpError from "../helpers/httpError.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 import "dotenv/config";
 
 const register = async (req, res, next) => {
   try {
-    const { email, password, subscription } = req.body;
-    const user = await User.findOne({ email });
+    const {email, password, subscription} = req.body;
 
-    if (user) {
-      throw HttpError(409, "Email in use");
+    const user = await user.findOne({ email });
+
+    if(user) {
+      throw HttpError(409, 'Email is used')
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password,10)
+    const avatarURL = gvatar.url(email);
+    const verificationToken = crypto.randomUUID();
 
-    await User.create({ email, password: hashedPassword });
+    await User.create({
+      email,
+      password: hashedPassword,
+      avatarURL,
+      verificationToken,
+    })
+
+    sendVerificationMail({
+      to:email,
+      verificationToken,
+    })
 
     res.send({
       user: {
         email,
         subscription: subscription || "starter",
-      },
-    });
+        avatarURL,
+      }
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+};  
 
 const login = async (req, res, next) => {
   try {
