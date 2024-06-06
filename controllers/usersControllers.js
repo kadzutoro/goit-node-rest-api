@@ -3,6 +3,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import Jimp from "jimp";
 import HttpError from "../helpers/httpError.js";
+import crypto from 'node:crypto'
+import { sendVerification, sendVerificationMail } from '../email.js';
 
 const changeAvatar = async (req, res, next) => {
   try {
@@ -30,7 +32,49 @@ const changeAvatar = async (req, res, next) => {
   }
 };
 
-export { changeAvatar };
+const verifyVerificationToken = async (req,res,next) => {
+    try {
+      const { verificationToken } = req.params;
+      const user = await User.findOne({ verificationToken });
+
+      if(!user) {
+        throw HttpError(404, 'User not found')
+      }
+
+      await User.findByIdAndUpdate(user._id, {
+        verificationToken: null,
+        verify: true,
+      })
+      req.send({message: 'Verification succsessful'})
+
+    } catch (error) {
+      next(error)
+    }
+}
+
+const requestVerificationToken = async (req,res,next) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({email});
+    if(!user) {
+      throw HttpError(404, 'User not found')
+    }
+    if(user.verify) {
+      throw HttpError(400, 'Verification has already been passed ')
+    }
+
+    sendVerificationMail({
+      to:email,
+      verificationToken: user.verificationToken
+    })
+
+    res.send({ message: 'Verification email sent' })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export { changeAvatar, verifyVerificationToken, requestVerificationToken };
 
 
 

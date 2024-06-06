@@ -1,4 +1,5 @@
 
+import { boolean } from "joi";
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -22,6 +23,14 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
     avatarURL: String,
+    verify: {
+      type: boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: string,
+      required:[true, 'Verify token is required'],
+    },
   },
   { timestamps: true, versionKey: false }
 );
